@@ -1,432 +1,191 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Sub-2 Half Marathon Tracker - Daily Edition</title>
-		<script src="https://cdn.tailwindcss.com"></script>
-		<style>
-			.completed-week {
-				background-color: #f8fafc;
-				border-color: #cbd5e1;
-			}
-			.completed-week h3 {
-				color: #64748b;
-			}
-			/* Added !important to ensure Tailwind utilities don't override the checked state */
-			.workout-checkbox:checked + span {
-				text-decoration: line-through !important;
-				color: #94a3b8 !important;
-			}
-		</style>
-	</head>
-	<body class="bg-slate-50 text-slate-900 font-sans pb-16">
-		<header class="bg-slate-900 text-white p-6 shadow-md sticky top-0 z-20">
-			<div class="max-w-4xl mx-auto flex justify-between items-center">
-				<div>
-					<h1
-						class="text-2xl font-bold italic tracking-tight text-blue-400"
-					>
-						SUB-2:00 TRACKER
-					</h1>
-					<p class="text-slate-400 text-sm mt-1">
-						Race Day: Friday, December 4, 2026
-					</p>
-				</div>
-				<div class="text-right">
-					<p
-						class="text-xs uppercase tracking-widest text-slate-400 mb-1"
-					>
-						Paces
-					</p>
-					<div
-						class="flex gap-2 text-sm font-mono flex-col sm:flex-row"
-					>
-						<span
-							class="bg-slate-800 px-2 py-1 rounded border border-slate-700"
-							>Easy: 10:49</span
-						>
-						<span
-							class="bg-blue-900 px-2 py-1 rounded text-blue-100 border border-blue-700"
-							>Tempo: 8:44</span
-						>
-					</div>
-				</div>
-			</div>
-		</header>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sub-2 Half Marathon Tracker - Monday Start Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .completed-week { background-color: #f8fafc; border-color: #cbd5e1; }
+        .completed-week h3 { color: #64748b; }
+        .workout-checkbox:checked + span { text-decoration: line-through !important; color: #94a3b8 !important; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans pb-16">
 
-		<main class="max-w-4xl mx-auto p-4 md:p-8">
-			<div
-				class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 sticky top-[95px] z-10"
-			>
-				<div class="flex justify-between items-end mb-2">
-					<h2 class="text-lg font-bold text-slate-800">
-						Total Days Completed
-					</h2>
-					<span
-						class="text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full"
-						id="progress-text"
-						>0%</span
-					>
-				</div>
-				<div
-					class="w-full bg-slate-100 rounded-full h-4 overflow-hidden border border-slate-200"
-				>
-					<div
-						id="progress-bar"
-						class="bg-blue-500 h-4 rounded-full transition-all duration-700 ease-out"
-						style="width: 0%"
-					></div>
-				</div>
-				<p
-					id="phases-count"
-					class="text-xs text-slate-500 mt-2 text-right font-medium"
-				>
-					0 / 210 Days
-				</p>
-			</div>
+    <header class="bg-slate-900 text-white p-6 shadow-md sticky top-0 z-20">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold italic tracking-tight text-blue-400">SUB-2:00 TRACKER</h1>
+                <p class="text-slate-400 text-sm mt-1">Race Day: Friday, December 4, 2026</p>
+            </div>
+            <div class="text-right">
+                <p class="text-xs uppercase tracking-widest text-slate-400 mb-1">Paces</p>
+                <div class="flex gap-2 text-sm font-mono flex-col sm:flex-row">
+                    <span class="bg-slate-800 px-2 py-1 rounded border border-slate-700">Easy: 10:49</span>
+                    <span class="bg-blue-900 px-2 py-1 rounded text-blue-100 border border-blue-700">Tempo: 8:44</span>
+                </div>
+            </div>
+        </div>
+    </header>
 
-			<section id="plan-container" class="space-y-6"></section>
+    <main class="max-w-4xl mx-auto p-4 md:p-8">
+        
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 sticky top-[95px] z-10">
+            <div class="flex justify-between items-end mb-2">
+                <h2 class="text-lg font-bold text-slate-800">Total Days Completed</h2>
+                <span class="text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full" id="progress-text">0%</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-4 overflow-hidden border border-slate-200">
+                <div id="progress-bar" class="bg-blue-500 h-4 rounded-full transition-all duration-700 ease-out" style="width: 0%"></div>
+            </div>
+            <p id="phases-count" class="text-xs text-slate-500 mt-2 text-right font-medium">0 / 210 Days</p>
+        </div>
 
-			<div class="mt-12 text-center">
-				<button
-					id="reset-btn"
-					class="text-xs text-slate-400 hover:text-red-500 underline transition-colors"
-				>
-					Reset All Progress (Clear Memory)
-				</button>
-			</div>
-		</main>
+        <section id="plan-container" class="space-y-6">
+            </section>
 
-		<script>
-			document.addEventListener("DOMContentLoaded", () => {
-				const plan = [];
-				// Init at Noon (12:00) to prevent Daylight Saving Time math bugs
-				let currentDate = new Date(2026, 4, 11, 12, 0, 0); // Starts Monday, May 11, 2026
+        <div class="mt-12 text-center">
+            <button id="reset-btn" class="text-xs text-slate-400 hover:text-red-500 underline transition-colors">
+                Reset All Progress (Clear Memory)
+            </button>
+        </div>
+    </main>
 
-				// Helper to advance dates and build week objects
-				function addWeek(title, type, color, goal, days) {
-					let startStr = currentDate.toLocaleDateString("en-US", {
-						month: "short",
-						day: "numeric",
-					});
-					currentDate.setDate(currentDate.getDate() + 6);
-					let endStr = currentDate.toLocaleDateString("en-US", {
-						month: "short",
-						day: "numeric",
-					});
-					currentDate.setDate(currentDate.getDate() + 1); // Move to next Monday
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const plan = [];
+            // Init at Noon (12:00) to prevent Daylight Saving Time math bugs
+            let currentDate = new Date(2026, 4, 11, 12, 0, 0); // Starts Monday, May 11, 2026
 
-					let weekId = plan.length + 1;
+            // Helper to advance dates and build week objects
+            function addWeek(title, type, color, goal, days) {
+                let startStr = currentDate.toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
+                currentDate.setDate(currentDate.getDate() + 6);
+                let endStr = currentDate.toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
+                currentDate.setDate(currentDate.getDate() + 1); // Move to next Monday
+                
+                let weekId = plan.length + 1;
+                
+                plan.push({
+                    id: `week_${weekId}`,
+                    date: `${startStr} - ${endStr}`,
+                    title: title,
+                    type: type,
+                    color: color,
+                    goal: goal,
+                    schedule: days.map((text, idx) => ({ id: `w${weekId}_d${idx+1}`, text: text }))
+                });
+            }
 
-					plan.push({
-						id: `week_${weekId}`,
-						date: `${startStr} - ${endStr}`,
-						title: title,
-						type: type,
-						color: color,
-						goal: goal,
-						schedule: days.map((text, idx) => ({
-							id: `w${weekId}_d${idx + 1}`,
-							text: text,
-						})),
-					});
-				}
+            // --- PHASE 1: THE 20-WEEK BASE BUILD (Shifted to Monday Runs) ---
+            
+            // Weeks 1-4: 13 Miles
+            for(let i=1; i<=4; i++) {
+                addWeek(`Base Week ${i}`, "Base Build: Block 1", "text-emerald-600", "Goal: 13 Miles. Establish a 4-day running habit.", [
+                    "Mon: 3 Miles Easy", "Tue: 3 Miles Easy", "Wed: Rest", 
+                    "Thu: 3 Miles Easy", "Fri: Rest", "Sat: 4 Miles Easy", "Sun: Rest or Cross-Train"
+                ]);
+            }
+            // Weeks 5-8: 15 Miles
+            for(let i=5; i<=8; i++) {
+                addWeek(`Base Week ${i}`, "Base Build: Block 2", "text-emerald-600", "Goal: 15 Miles. Slightly increase midweek volume.", [
+                    "Mon: 3 Miles Easy", "Tue: 4 Miles Easy", "Wed: Rest", 
+                    "Thu: 3 Miles Easy", "Fri: Rest", "Sat: 5 Miles Easy", "Sun: Rest or Cross-Train"
+                ]);
+            }
+            // Weeks 9-12: 18 Miles
+            for(let i=9; i<=12; i++) {
+                addWeek(`Base Week ${i}`, "Base Build: Block 3", "text-emerald-600", "Goal: 18 Miles. Nearing the 20-mile threshold.", [
+                    "Mon: 4 Miles Easy", "Tue: 4 Miles Easy", "Wed: Rest", 
+                    "Thu: 4 Miles Easy", "Fri: Rest", "Sat: 6 Miles Easy", "Sun: Rest or Cross-Train"
+                ]);
+            }
+            // Weeks 13-16: 20 Miles
+            for(let i=13; i<=16; i++) {
+                addWeek(`Base Week ${i}`, "Base Build: Block 4", "text-emerald-600", "Goal: 20 Miles. You hit the plan requirement! Maintain this.", [
+                    "Mon: 4 Miles Easy", "Tue: 5 Miles Easy", "Wed: Rest", 
+                    "Thu: 4 Miles Easy", "Fri: Rest", "Sat: 7 Miles Easy", "Sun: Rest or Cross-Train"
+                ]);
+            }
+            // Weeks 17-20: 20 Miles (Bridge to Official Plan)
+            for(let i=17; i<=20; i++) {
+                addWeek(`Base Week ${i}`, "Bridge Phase", "text-blue-600", "Goal: 20 Miles. Preparing for the 8-Mile Day 7 requirement.", [
+                    "Mon: 4 Miles Easy", "Tue: 4 Miles Easy", "Wed: Rest", 
+                    "Thu: 4 Miles Easy", "Fri: Rest", "Sat: 8 Miles Easy LSD", "Sun: Rest or Cross-Train"
+                ]);
+            }
 
-				// --- PHASE 1: THE 20-WEEK BASE BUILD ---
+            // --- PHASE 2: THE 10-WEEK OFFICIAL PLAN (Shifted to Monday Runs) ---
+            
+            addWeek("Official Week 1", "Official Plan", "text-purple-600", "Intro to Intervals & First Long Run", [
+                "Mon: 3 Miles Easy", "Tue: 7 Miles (8x400 @ 2:00, 200m rec)", "Wed: Rest", "Thu: 3 Miles Easy", "Fri: Rest or Cross-Train", "Sat: 8 Miles LSD", "Sun: Rest or Cross-Train"
+            ]);
+            addWeek("Official Week 2", "Official Plan", "text-purple-600", "Pyramid Intervals", [
+                "Mon: 3 Miles Easy", "Tue: 6 Miles (3x400, 2x600, 2x400)", "Wed: 3 Miles Easy", "Thu: 4 Miles Easy", "Fri: Rest or Cross-Train", "Sat: 8 Miles LSD", "Sun: Rest or Cross-Train"
+            ]);
+            addWeek("Official Week 3", "Official Plan", "text-purple-600", "Intro to Yasso 800s", [
+                "Mon: 3 Miles Easy", "Tue: 7 Miles (3x400, 3x800 @ 4:00)", "Wed: 3 Miles Easy", "Thu: 4 Miles Easy", "Fri: Rest or Cross-Train", "Sat: 10 Miles LSD", "Sun: Rest or Cross-Train"
+            ]);
+            addWeek("Official Week 4", "Official Plan", "text-purple-600", "Tempo Introduction", [
+                "Mon: 4 Miles Easy", "Tue: 7 Miles (Mixed Intervals)", "Wed: 3 Miles Easy", "Thu: 4 Miles Easy", "Fri: Rest or Cross-Train", "Sat: 8 Miles (3M @ 8:44 Tempo)", "Sun: Rest or Cross-Train"
+            ]);
+            addWeek("Official Week 5", "Official Plan", "text-purple-600", "Halfway Point & The Mile Buildup", [
+                "Mon: 4 Miles Easy", "Tue: 8 Miles (The Mile Buildup)", "Wed: 3 Miles Easy", "Thu: 4 Miles Easy", "Fri: Rest or Cross-Train", "Sat: 12 Miles LSD", "Sun: Rest or Cross-Train"
+            ]);
+            addWeek("Official Week 6", "Official Plan", "text-purple-600", "Heavy Yassos & Longer Tempo", [
+                "Mon: 4 Miles Easy", "Tue: 8 Miles (5x800 @ 4:00)", "Wed: 3 Miles Easy", "Thu: 4 Miles Easy", "Fri: Rest or Cross-Train", "Sat: 10 Miles (4M @ 8:44 Tempo)", "Sun: Rest or Cross-Train"
+            ]);
+            addWeek("Official Week 7", "Official Plan", "text-purple-600", "Peak Volume Week", [
+                "Mon: 4 Miles Easy", "Tue: 8 Miles (Intervals)", "Wed: 3 Miles Easy", "Thu: 3 Miles Easy", "Fri: Rest Day", "Sat: 14 Miles LSD (Longest Run)", "Sun: Rest or Cross-Train"
+            ]);
+            addWeek("Official Week 8", "Official Plan", "text-purple-600", "Final High Intensity Week", [
+                "Mon: 4 Miles Easy", "Tue: 8 Miles (10x400 @ 2:00)", "Wed: 3 Miles Easy", "Thu: 5 Miles Easy", "Fri: Rest Day", "Sat: 10 Miles (6M @ 8:44 Tempo)", "Sun: Rest or Cross-Train"
+            ]);
+            addWeek("Official Week 9", "Taper Phase", "text-orange-500", "The Taper Begins", [
+                "Mon: 3 Miles Easy", "Tue: 8 Miles (Mile Breakdown)", "Wed: 3 Miles Easy", "Thu: 3 Miles Easy", "Fri: Rest or Cross-Train", "Sat: 8 Miles LSD", "Sun: Rest or Cross-Train"
+            ]);
+            addWeek("Official Week 10", "Race Week", "text-red-600", "RACE WEEK! Trust your training.", [
+                "Mon: 3 Miles Easy", "Tue: 6 Miles (Taper Intervals)", "Wed: 2 Miles Easy (Shakeout)", "Thu: Rest Day", "Fri (Dec 4): RACE DAY! SUB-2:00 ATTEMPT!", "Sat: Rest & Celebrate", "Sun: Rest"
+            ]);
 
-				// Weeks 1-4: 13 Miles
-				for (let i = 1; i <= 4; i++) {
-					addWeek(
-						`Base Week ${i}`,
-						"Base Build: Block 1",
-						"text-emerald-600",
-						"Goal: 13 Miles. Establish a 4-day running habit.",
-						[
-							"Mon: Rest or Cross-Train",
-							"Tue: 3 Miles Easy",
-							"Wed: 3 Miles Easy",
-							"Thu: Rest",
-							"Fri: 3 Miles Easy",
-							"Sat: Rest",
-							"Sun: 4 Miles Easy",
-						]
-					);
-				}
-				// Weeks 5-8: 15 Miles
-				for (let i = 5; i <= 8; i++) {
-					addWeek(
-						`Base Week ${i}`,
-						"Base Build: Block 2",
-						"text-emerald-600",
-						"Goal: 15 Miles. Slightly increase midweek volume.",
-						[
-							"Mon: Rest or Cross-Train",
-							"Tue: 3 Miles Easy",
-							"Wed: 4 Miles Easy",
-							"Thu: Rest",
-							"Fri: 3 Miles Easy",
-							"Sat: Rest",
-							"Sun: 5 Miles Easy",
-						]
-					);
-				}
-				// Weeks 9-12: 18 Miles
-				for (let i = 9; i <= 12; i++) {
-					addWeek(
-						`Base Week ${i}`,
-						"Base Build: Block 3",
-						"text-emerald-600",
-						"Goal: 18 Miles. Nearing the 20-mile threshold.",
-						[
-							"Mon: Rest or Cross-Train",
-							"Tue: 4 Miles Easy",
-							"Wed: 4 Miles Easy",
-							"Thu: Rest",
-							"Fri: 4 Miles Easy",
-							"Sat: Rest",
-							"Sun: 6 Miles Easy",
-						]
-					);
-				}
-				// Weeks 13-16: 20 Miles
-				for (let i = 13; i <= 16; i++) {
-					addWeek(
-						`Base Week ${i}`,
-						"Base Build: Block 4",
-						"text-emerald-600",
-						"Goal: 20 Miles. You hit the plan requirement! Maintain this.",
-						[
-							"Mon: Rest or Cross-Train",
-							"Tue: 4 Miles Easy",
-							"Wed: 5 Miles Easy",
-							"Thu: Rest",
-							"Fri: 4 Miles Easy",
-							"Sat: Rest",
-							"Sun: 7 Miles Easy",
-						]
-					);
-				}
-				// Weeks 17-20: 20 Miles (Bridge to Official Plan)
-				for (let i = 17; i <= 20; i++) {
-					addWeek(
-						`Base Week ${i}`,
-						"Bridge Phase",
-						"text-blue-600",
-						"Goal: 20 Miles. Preparing for the 8-Mile Day 7 requirement.",
-						[
-							"Mon: Rest or Cross-Train",
-							"Tue: 4 Miles Easy",
-							"Wed: 4 Miles Easy",
-							"Thu: Rest",
-							"Fri: 4 Miles Easy",
-							"Sat: Rest",
-							"Sun: 8 Miles Easy LSD",
-						]
-					);
-				}
+            // --- APP LOGIC ---
 
-				// --- PHASE 2: THE 10-WEEK OFFICIAL PLAN ---
+            const STORAGE_KEY = 'sub2tracker_v6_shifted';
+            let savedProgress = [];
+            const totalDays = 210; // 30 weeks * 7 days
+            const container = document.getElementById('plan-container');
 
-				addWeek(
-					"Official Week 1",
-					"Official Plan",
-					"text-purple-600",
-					"Intro to Intervals & First Long Run",
-					[
-						"Mon: Rest or Cross-Train",
-						"Tue: 3 Miles Easy",
-						"Wed: 7 Miles (8x400 @ 2:00, 200m rec)",
-						"Thu: Rest",
-						"Fri: 3 Miles Easy",
-						"Sat: Rest or Cross-Train",
-						"Sun: 8 Miles LSD",
-					]
-				);
-				addWeek(
-					"Official Week 2",
-					"Official Plan",
-					"text-purple-600",
-					"Pyramid Intervals",
-					[
-						"Mon: Rest or Cross-Train",
-						"Tue: 3 Miles Easy",
-						"Wed: 6 Miles (3x400, 2x600, 2x400)",
-						"Thu: 3 Miles Easy",
-						"Fri: 4 Miles Easy",
-						"Sat: Rest or Cross-Train",
-						"Sun: 8 Miles LSD",
-					]
-				);
-				addWeek(
-					"Official Week 3",
-					"Official Plan",
-					"text-purple-600",
-					"Intro to Yasso 800s",
-					[
-						"Mon: Rest or Cross-Train",
-						"Tue: 3 Miles Easy",
-						"Wed: 7 Miles (3x400, 3x800 @ 4:00)",
-						"Thu: 3 Miles Easy",
-						"Fri: 4 Miles Easy",
-						"Sat: Rest or Cross-Train",
-						"Sun: 10 Miles LSD",
-					]
-				);
-				addWeek(
-					"Official Week 4",
-					"Official Plan",
-					"text-purple-600",
-					"Tempo Introduction",
-					[
-						"Mon: Rest or Cross-Train",
-						"Tue: 4 Miles Easy",
-						"Wed: 7 Miles (Mixed Intervals)",
-						"Thu: 3 Miles Easy",
-						"Fri: 4 Miles Easy",
-						"Sat: Rest or Cross-Train",
-						"Sun: 8 Miles (3M @ 8:44 Tempo)",
-					]
-				);
-				addWeek(
-					"Official Week 5",
-					"Official Plan",
-					"text-purple-600",
-					"Halfway Point & The Mile Buildup",
-					[
-						"Mon: Rest or Cross-Train",
-						"Tue: 4 Miles Easy",
-						"Wed: 8 Miles (The Mile Buildup)",
-						"Thu: 3 Miles Easy",
-						"Fri: 4 Miles Easy",
-						"Sat: Rest or Cross-Train",
-						"Sun: 12 Miles LSD",
-					]
-				);
-				addWeek(
-					"Official Week 6",
-					"Official Plan",
-					"text-purple-600",
-					"Heavy Yassos & Longer Tempo",
-					[
-						"Mon: Rest or Cross-Train",
-						"Tue: 4 Miles Easy",
-						"Wed: 8 Miles (5x800 @ 4:00)",
-						"Thu: 3 Miles Easy",
-						"Fri: 4 Miles Easy",
-						"Sat: Rest or Cross-Train",
-						"Sun: 10 Miles (4M @ 8:44 Tempo)",
-					]
-				);
-				addWeek(
-					"Official Week 7",
-					"Official Plan",
-					"text-purple-600",
-					"Peak Volume Week",
-					[
-						"Mon: Rest or Cross-Train",
-						"Tue: 4 Miles Easy",
-						"Wed: 8 Miles (Intervals)",
-						"Thu: 3 Miles Easy",
-						"Fri: 3 Miles Easy",
-						"Sat: Rest Day",
-						"Sun: 14 Miles LSD (Longest Run)",
-					]
-				);
-				addWeek(
-					"Official Week 8",
-					"Official Plan",
-					"text-purple-600",
-					"Final High Intensity Week",
-					[
-						"Mon: Rest or Cross-Train",
-						"Tue: 4 Miles Easy",
-						"Wed: 8 Miles (10x400 @ 2:00)",
-						"Thu: 3 Miles Easy",
-						"Fri: 5 Miles Easy",
-						"Sat: Rest Day",
-						"Sun: 10 Miles (6M @ 8:44 Tempo)",
-					]
-				);
-				addWeek(
-					"Official Week 9",
-					"Taper Phase",
-					"text-orange-500",
-					"The Taper Begins",
-					[
-						"Mon: Rest or Cross-Train",
-						"Tue: 3 Miles Easy",
-						"Wed: 8 Miles (Mile Breakdown)",
-						"Thu: 3 Miles Easy",
-						"Fri: 3 Miles Easy",
-						"Sat: Rest or Cross-Train",
-						"Sun: 8 Miles LSD",
-					]
-				);
-				addWeek(
-					"Official Week 10",
-					"Race Week",
-					"text-red-600",
-					"RACE WEEK! Trust your training.",
-					[
-						"Mon: Rest or Cross-Train",
-						"Tue: 3 Miles Easy",
-						"Wed: 6 Miles (Taper Intervals)",
-						"Thu: 2 Miles Easy (Shakeout)",
-						"Fri (Dec 4): RACE DAY! SUB-2:00 ATTEMPT!",
-						"Sat: Rest & Celebrate",
-						"Sun: Rest",
-					]
-				);
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    savedProgress = JSON.parse(stored);
+                }
+            } catch (e) {
+                console.error("Could not load saved progress:", e);
+                savedProgress = [];
+            }
 
-				// --- APP LOGIC ---
-
-				const STORAGE_KEY = "sub2tracker_v5_clean";
-				let savedProgress = [];
-				const totalDays = 210; // 30 weeks * 7 days
-				const container = document.getElementById("plan-container");
-
-				// Safe fetch from LocalStorage
-				try {
-					const stored = localStorage.getItem(STORAGE_KEY);
-					if (stored) {
-						savedProgress = JSON.parse(stored);
-					}
-				} catch (e) {
-					console.error("Could not load saved progress:", e);
-					savedProgress = [];
-				}
-
-				function renderPlan() {
-					container.innerHTML = "";
-
-					plan.forEach((week) => {
-						// Check if all days in this week are completed
-						const allDaysCompleted = week.schedule.every((day) =>
-							savedProgress.includes(day.id)
-						);
-
-						const card = document.createElement("div");
-						card.className = `progress-card bg-white border border-slate-200 rounded-xl p-5 md:p-6 shadow-sm transition-colors ${
-							allDaysCompleted ? "completed-week" : ""
-						}`;
-
-						// Build the daily checkboxes
-						const daysHTML = week.schedule
-							.map((day) => {
-								const isChecked = savedProgress.includes(day.id)
-									? "checked"
-									: "";
-								return `
+            function renderPlan() {
+                container.innerHTML = '';
+                
+                plan.forEach((week) => {
+                    const allDaysCompleted = week.schedule.every(day => savedProgress.includes(day.id));
+                    const card = document.createElement('div');
+                    card.className = `progress-card bg-white border border-slate-200 rounded-xl p-5 md:p-6 shadow-sm transition-colors ${allDaysCompleted ? 'completed-week' : ''}`;
+                    
+                    const daysHTML = week.schedule.map(day => {
+                        const isChecked = savedProgress.includes(day.id) ? 'checked' : '';
+                        return `
                             <label class="flex items-center space-x-3 cursor-pointer p-2 hover:bg-slate-50 rounded-lg transition-colors border border-transparent hover:border-slate-200">
                                 <input type="checkbox" value="${day.id}" class="workout-checkbox w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" ${isChecked}>
                                 <span class="text-sm font-medium text-slate-700 select-none transition-colors">${day.text}</span>
                             </label>
                         `;
-							})
-							.join("");
+                    }).join('');
 
-						card.innerHTML = `
+                    card.innerHTML = `
                         <div class="flex justify-between items-center mb-2">
                             <span class="text-xs font-bold uppercase tracking-wider ${week.color}">${week.type}</span>
                             <span class="text-sm font-semibold bg-slate-100 border border-slate-200 px-3 py-1 rounded-md text-slate-700 shadow-sm">${week.date}</span>
@@ -438,119 +197,72 @@
                             ${daysHTML}
                         </div>
                     `;
-						container.appendChild(card);
-					});
+                    container.appendChild(card);
+                });
+                
+                updateProgressBar();
+            }
 
-					updateProgressBar();
-				}
+            container.addEventListener('change', function(e) {
+                if (e.target.classList.contains('workout-checkbox')) {
+                    const checkbox = e.target;
+                    const id = checkbox.value;
+                    
+                    if (checkbox.checked) {
+                        if (!savedProgress.includes(id)) savedProgress.push(id);
+                    } else {
+                        savedProgress = savedProgress.filter(item => item !== id);
+                    }
+                    
+                    try {
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(savedProgress));
+                    } catch (err) {
+                        console.error("Could not save progress:", err);
+                    }
+                    
+                    const card = checkbox.closest('.progress-card');
+                    const allCheckboxes = card.querySelectorAll('.workout-checkbox');
+                    const allChecked = Array.from(allCheckboxes).every(cb => cb.checked);
+                    
+                    if (allChecked) {
+                        card.classList.add('completed-week');
+                    } else {
+                        card.classList.remove('completed-week');
+                    }
 
-				// Centralized Event Listener for checkboxes
-				container.addEventListener("change", function (e) {
-					if (e.target.classList.contains("workout-checkbox")) {
-						const checkbox = e.target;
-						const id = checkbox.value;
+                    updateProgressBar();
+                }
+            });
 
-						if (checkbox.checked) {
-							if (!savedProgress.includes(id))
-								savedProgress.push(id);
-						} else {
-							savedProgress = savedProgress.filter(
-								(item) => item !== id
-							);
-						}
+            function updateProgressBar() {
+                const completed = savedProgress.length;
+                const percentage = Math.round((completed / totalDays) * 100);
 
-						// Save to local storage
-						try {
-							localStorage.setItem(
-								STORAGE_KEY,
-								JSON.stringify(savedProgress)
-							);
-						} catch (err) {
-							console.error("Could not save progress:", err);
-						}
+                document.getElementById('progress-bar').style.width = `${percentage}%`;
+                document.getElementById('progress-text').innerText = `${percentage}%`;
+                document.getElementById('phases-count').innerText = `${completed} / ${totalDays} Days Completed`;
+                
+                if(percentage === 100) {
+                    document.getElementById('progress-bar').classList.replace('bg-blue-500', 'bg-emerald-500');
+                    document.getElementById('progress-text').classList.replace('text-blue-600', 'text-emerald-600');
+                    document.getElementById('progress-text').classList.replace('bg-blue-50', 'bg-emerald-50');
+                } else {
+                    document.getElementById('progress-bar').classList.replace('bg-emerald-500', 'bg-blue-500');
+                    document.getElementById('progress-text').classList.replace('text-emerald-600', 'text-blue-600');
+                    document.getElementById('progress-text').classList.replace('bg-emerald-50', 'bg-blue-50');
+                }
+            }
 
-						// Check if we need to style the parent card as completed
-						const card = checkbox.closest(".progress-card");
-						const allCheckboxes =
-							card.querySelectorAll(".workout-checkbox");
-						const allChecked = Array.from(allCheckboxes).every(
-							(cb) => cb.checked
-						);
+            document.getElementById('reset-btn').addEventListener('click', function() {
+                if(confirm("Are you sure you want to erase all your progress?")) {
+                    savedProgress = [];
+                    localStorage.removeItem(STORAGE_KEY);
+                    renderPlan();
+                }
+            });
 
-						if (allChecked) {
-							card.classList.add("completed-week");
-						} else {
-							card.classList.remove("completed-week");
-						}
-
-						updateProgressBar();
-					}
-				});
-
-				// Update top GUI
-				function updateProgressBar() {
-					const completed = savedProgress.length;
-					const percentage = Math.round(
-						(completed / totalDays) * 100
-					);
-
-					document.getElementById(
-						"progress-bar"
-					).style.width = `${percentage}%`;
-					document.getElementById(
-						"progress-text"
-					).innerText = `${percentage}%`;
-					document.getElementById(
-						"phases-count"
-					).innerText = `${completed} / ${totalDays} Days Completed`;
-
-					if (percentage === 100) {
-						document
-							.getElementById("progress-bar")
-							.classList.replace("bg-blue-500", "bg-emerald-500");
-						document
-							.getElementById("progress-text")
-							.classList.replace(
-								"text-blue-600",
-								"text-emerald-600"
-							);
-						document
-							.getElementById("progress-text")
-							.classList.replace("bg-blue-50", "bg-emerald-50");
-					} else {
-						document
-							.getElementById("progress-bar")
-							.classList.replace("bg-emerald-500", "bg-blue-500");
-						document
-							.getElementById("progress-text")
-							.classList.replace(
-								"text-emerald-600",
-								"text-blue-600"
-							);
-						document
-							.getElementById("progress-text")
-							.classList.replace("bg-emerald-50", "bg-blue-50");
-					}
-				}
-
-				// Reset Button Logic
-				document
-					.getElementById("reset-btn")
-					.addEventListener("click", function () {
-						if (
-							confirm(
-								"Are you sure you want to erase all your progress?"
-							)
-						) {
-							savedProgress = [];
-							localStorage.removeItem(STORAGE_KEY);
-							renderPlan();
-						}
-					});
-
-				// Initialize the app
-				renderPlan();
-			});
-		</script>
-	</body>
+            renderPlan();
+        });
+    </script>
+</body>
 </html>
