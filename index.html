@@ -3,22 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sub-2 Half Marathon Tracker</title>
+    <title>Sub-2 Half Marathon Tracker - Daily Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .progress-card { transition: all 0.3s ease; }
-        .completed-card { 
-            background-color: #f8fafc; 
-            border-color: #cbd5e1; 
-        }
-        .completed-card .schedule-box {
-            opacity: 0.6;
-            background-color: #f1f5f9;
-        }
-        .completed-text { text-decoration: line-through; color: #94a3b8; }
+        .completed-week { background-color: #f8fafc; border-color: #cbd5e1; }
+        .completed-week h3 { color: #64748b; }
+        .workout-checkbox:checked + span { text-decoration: line-through; color: #94a3b8; }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-900 font-sans pb-16">
+<body class="bg-slate-50 text-slate-900 font-sans pb-16">
 
     <header class="bg-slate-900 text-white p-6 shadow-md sticky top-0 z-20">
         <div class="max-w-4xl mx-auto flex justify-between items-center">
@@ -29,8 +22,8 @@
             <div class="text-right">
                 <p class="text-xs uppercase tracking-widest text-slate-400 mb-1">Paces</p>
                 <div class="flex gap-2 text-sm font-mono flex-col sm:flex-row">
-                    <span class="bg-slate-800 px-2 py-1 rounded">Easy: 10:49</span>
-                    <span class="bg-blue-900 px-2 py-1 rounded text-blue-100">Tempo: 8:44</span>
+                    <span class="bg-slate-800 px-2 py-1 rounded border border-slate-700">Easy: 10:49</span>
+                    <span class="bg-blue-900 px-2 py-1 rounded text-blue-100 border border-blue-700">Tempo: 8:44</span>
                 </div>
             </div>
         </div>
@@ -38,15 +31,15 @@
 
     <main class="max-w-4xl mx-auto p-4 md:p-8">
         
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 sticky top-[100px] z-10">
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 sticky top-[95px] z-10">
             <div class="flex justify-between items-end mb-2">
-                <h2 class="text-lg font-bold text-slate-800">Training Progress</h2>
+                <h2 class="text-lg font-bold text-slate-800">Total Days Completed</h2>
                 <span class="text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full" id="progress-text">0%</span>
             </div>
             <div class="w-full bg-slate-100 rounded-full h-4 overflow-hidden border border-slate-200">
                 <div id="progress-bar" class="bg-blue-500 h-4 rounded-full transition-all duration-700 ease-out" style="width: 0%"></div>
             </div>
-            <p id="phases-count" class="text-xs text-slate-500 mt-2 text-right">0 / 11 Phases Complete</p>
+            <p id="phases-count" class="text-xs text-slate-500 mt-2 text-right font-medium">0 / 210 Days</p>
         </div>
 
         <section id="plan-container" class="space-y-6">
@@ -54,198 +47,177 @@
     </main>
 
     <script>
-        const extendedPlan = [
-            { 
-                id: 0, date: "May 10 - Sep 27", title: "Base Training Phase", type: "base build", color: "text-emerald-600",
-                goal: "Safely build up to and maintain the 20-mile per week baseline required before the official plan begins.", 
-                schedule: [
-                    "Weeks 1-4 (May): Gradually increase total volume. Keep all runs easy (10:49 pace).",
-                    "Weeks 5-12 (June - July): Hit the 20-mile/week target. Run 4-5 days a week.",
-                    "Weeks 13-20 (Aug - Sep): Maintain 20 miles/week. Ensure Sunday long runs comfortably hit 6 to 8 miles to prepare for Official Week 1."
-                ]
-            },
-            { 
-                id: 1, date: "Sep 28 - Oct 4", title: "Official Week 1", type: "official plan", color: "text-purple-600", goal: "Intro to Intervals & First Long Run", 
-                schedule: [
-                    "Mon: Rest or Cross-Train",
-                    "Tue: 3 Miles Easy",
-                    "Wed: 7 Miles (2M easy, 8x400 @ 2:00 w/ 200m recovery, 2M easy)",
-                    "Thu: Rest",
-                    "Fri: 0-3 Miles Easy",
-                    "Sat: Rest or Cross-Train",
-                    "Sun: 8 Miles LSD (Long, Slow Distance)"
-                ]
-            },
-            { 
-                id: 2, date: "Oct 5 - Oct 11", title: "Official Week 2", type: "official plan", color: "text-purple-600", goal: "Pyramid Intervals", 
-                schedule: [
-                    "Mon: Rest or Cross-Train",
-                    "Tue: 3 Miles Easy",
-                    "Wed: 6 Miles (2M easy, 3x400 @ 2:00, 2x600 @ 3:00, 2x400 @ 2:00 w/ 200m rec, 1M easy)",
-                    "Thu: 0-3 Miles Easy",
-                    "Fri: 4 Miles Easy",
-                    "Sat: Rest or Cross-Train",
-                    "Sun: 8 Miles LSD"
-                ]
-            },
-            { 
-                id: 3, date: "Oct 12 - Oct 18", title: "Official Week 3", type: "official plan", color: "text-purple-600", goal: "Intro to Yasso 800s", 
-                schedule: [
-                    "Mon: Rest or Cross-Train",
-                    "Tue: 3 Miles Easy",
-                    "Wed: 7 Miles (2M easy, 3x400 @ 2:00, 3x800 @ 4:00 w/ 400m rec, 1M easy)",
-                    "Thu: 0-3 Miles Easy",
-                    "Fri: 4 Miles Easy",
-                    "Sat: Rest or Cross-Train",
-                    "Sun: 10 Miles LSD"
-                ]
-            },
-            { 
-                id: 4, date: "Oct 19 - Oct 25", title: "Official Week 4", type: "official plan", color: "text-purple-600", goal: "Tempo Introduction", 
-                schedule: [
-                    "Mon: Rest or Cross-Train",
-                    "Tue: 4 Miles Easy",
-                    "Wed: 7 Miles (2M easy, 2x400, 1x800, 1x1200 @ 6:00, 1x800, 2x400, 1M easy)",
-                    "Thu: 0-3 Miles Easy",
-                    "Fri: 4 Miles Easy",
-                    "Sat: Rest or Cross-Train",
-                    "Sun: 8 Miles (3M easy, 3M @ 8:44 Tempo Pace, 2M easy)"
-                ]
-            },
-            { 
-                id: 5, date: "Oct 26 - Nov 1", title: "Official Week 5", type: "official plan", color: "text-purple-600", goal: "Halfway Point & The Mile Buildup", 
-                schedule: [
-                    "Mon: Rest or Cross-Train",
-                    "Tue: 4 Miles Easy",
-                    "Wed: 8 Miles (2M easy, 400, 800, 1200, 1 Mile @ 8:00, 800, 400, 1M easy)",
-                    "Thu: 0-3 Miles Easy",
-                    "Fri: 4 Miles Easy",
-                    "Sat: Rest or Cross-Train",
-                    "Sun: 10-12 Miles LSD"
-                ]
-            },
-            { 
-                id: 6, date: "Nov 2 - Nov 8", title: "Official Week 6", type: "official plan", color: "text-purple-600", goal: "Heavy Yassos & Longer Tempo", 
-                schedule: [
-                    "Mon: Rest or Cross-Train",
-                    "Tue: 4 Miles Easy",
-                    "Wed: 8 Miles (2M easy, 1x400, 5x800 @ 4:00, 1x400, 1M easy)",
-                    "Thu: 0-3 Miles Easy",
-                    "Fri: 3-4 Miles Easy",
-                    "Sat: Rest or Cross-Train",
-                    "Sun: 10 Miles (3M easy, 4M @ 8:44 Tempo Pace, 3M easy)"
-                ]
-            },
-            { 
-                id: 7, date: "Nov 9 - Nov 15", title: "Official Week 7", type: "official plan", color: "text-purple-600", goal: "Peak Volume Week", 
-                schedule: [
-                    "Mon: Rest or Cross-Train",
-                    "Tue: 4 Miles Easy",
-                    "Wed: 8 Miles (2M easy, 400, 800, 1 Mile @ 8:00, 2x800, 1M easy)",
-                    "Thu: 0-3 Miles Easy",
-                    "Fri: 3 Miles Easy",
-                    "Sat: Rest Day",
-                    "Sun: 12-14 Miles LSD (Longest Run of Plan)"
-                ]
-            },
-            { 
-                id: 8, date: "Nov 16 - Nov 22", title: "Official Week 8", type: "official plan", color: "text-purple-600", goal: "Final High Intensity Week", 
-                schedule: [
-                    "Mon: Rest or Cross-Train",
-                    "Tue: 3-4 Miles Easy",
-                    "Wed: 8 Miles (2M easy, 10x400 @ 2:00 w/ 200m rec, 1-2M easy)",
-                    "Thu: 0-3 Miles Easy",
-                    "Fri: 5 Miles Easy",
-                    "Sat: Rest Day",
-                    "Sun: 10 Miles (2M easy, 6M @ 8:44 Tempo Pace, 2M easy)"
-                ]
-            },
-            { 
-                id: 9, date: "Nov 23 - Nov 29", title: "Official Week 9", type: "taper", color: "text-orange-500", goal: "The Taper Begins", 
-                schedule: [
-                    "Mon: Rest or Cross-Train",
-                    "Tue: 3 Miles Easy",
-                    "Wed: 8 Miles (The 'Mile Breakdown' Interval Session)",
-                    "Thu: 0-3 Miles Easy",
-                    "Fri: 3 Miles Easy",
-                    "Sat: Rest or Cross-Train",
-                    "Sun: 8 Miles LSD"
-                ]
-            },
-            { 
-                id: 10, date: "Nov 30 - Dec 4", title: "Official Week 10", type: "race day", color: "text-red-600", goal: "RACE WEEK! (Friday Race Adjustment)", 
-                schedule: [
-                    "Mon: Rest or Cross-Train",
-                    "Tue: 3 Miles Easy",
-                    "Wed: 6 Miles Taper Intervals (2M easy, 400, 800, 400, 800, 400, 1M easy)",
-                    "Thu: 2 Miles Easy (Shakeout Run)",
-                    "Fri (Dec 4): RACE DAY! SUB-2:00 ATTEMPT!",
-                    "Sat-Sun: Rest and Celebrate!"
-                ]
-            }
-        ];
+        const plan = [];
+        let currentDate = new Date(2026, 4, 11); // Starts Monday, May 11, 2026
 
-        let savedProgress = JSON.parse(localStorage.getItem('sub2tracker_v3')) || [];
+        // Helper to advance dates and build week objects
+        function addWeek(title, type, color, goal, days) {
+            let startStr = currentDate.toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
+            currentDate.setDate(currentDate.getDate() + 6);
+            let endStr = currentDate.toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
+            currentDate.setDate(currentDate.getDate() + 1); // Move to next Monday
+            
+            let weekId = plan.length + 1;
+            
+            plan.push({
+                id: `week_${weekId}`,
+                date: `${startStr} - ${endStr}`,
+                title: title,
+                type: type,
+                color: color,
+                goal: goal,
+                schedule: days.map((text, idx) => ({ id: `w${weekId}_d${idx+1}`, text: text }))
+            });
+        }
+
+        // --- PHASE 1: THE 20-WEEK BASE BUILD ---
+        
+        // Weeks 1-4: 13 Miles
+        for(let i=1; i<=4; i++) {
+            addWeek(`Base Week ${i}`, "Base Build: Block 1", "text-emerald-600", "Goal: 13 Miles. Establish a 4-day running habit.", [
+                "Mon: Rest or Cross-Train", "Tue: 3 Miles Easy", "Wed: 3 Miles Easy", 
+                "Thu: Rest", "Fri: 3 Miles Easy", "Sat: Rest", "Sun: 4 Miles Easy"
+            ]);
+        }
+        // Weeks 5-8: 15 Miles
+        for(let i=5; i<=8; i++) {
+            addWeek(`Base Week ${i}`, "Base Build: Block 2", "text-emerald-600", "Goal: 15 Miles. Slightly increase midweek volume.", [
+                "Mon: Rest or Cross-Train", "Tue: 3 Miles Easy", "Wed: 4 Miles Easy", 
+                "Thu: Rest", "Fri: 3 Miles Easy", "Sat: Rest", "Sun: 5 Miles Easy"
+            ]);
+        }
+        // Weeks 9-12: 18 Miles
+        for(let i=9; i<=12; i++) {
+            addWeek(`Base Week ${i}`, "Base Build: Block 3", "text-emerald-600", "Goal: 18 Miles. Nearing the 20-mile threshold.", [
+                "Mon: Rest or Cross-Train", "Tue: 4 Miles Easy", "Wed: 4 Miles Easy", 
+                "Thu: Rest", "Fri: 4 Miles Easy", "Sat: Rest", "Sun: 6 Miles Easy"
+            ]);
+        }
+        // Weeks 13-16: 20 Miles
+        for(let i=13; i<=16; i++) {
+            addWeek(`Base Week ${i}`, "Base Build: Block 4", "text-emerald-600", "Goal: 20 Miles. You hit the plan requirement! Maintain this.", [
+                "Mon: Rest or Cross-Train", "Tue: 4 Miles Easy", "Wed: 5 Miles Easy", 
+                "Thu: Rest", "Fri: 4 Miles Easy", "Sat: Rest", "Sun: 7 Miles Easy"
+            ]);
+        }
+        // Weeks 17-20: 20 Miles (Bridge to Official Plan)
+        for(let i=17; i<=20; i++) {
+            addWeek(`Base Week ${i}`, "Bridge Phase", "text-blue-600", "Goal: 20 Miles. Preparing for the 8-Mile Day 7 requirement.", [
+                "Mon: Rest or Cross-Train", "Tue: 4 Miles Easy", "Wed: 4 Miles Easy", 
+                "Thu: Rest", "Fri: 4 Miles Easy", "Sat: Rest", "Sun: 8 Miles Easy LSD"
+            ]);
+        }
+
+        // --- PHASE 2: THE 10-WEEK OFFICIAL PLAN ---
+        
+        addWeek("Official Week 1", "Official Plan", "text-purple-600", "Intro to Intervals & First Long Run", [
+            "Mon: Rest or Cross-Train", "Tue: 3 Miles Easy", "Wed: 7 Miles (8x400 @ 2:00, 200m rec)", "Thu: Rest", "Fri: 3 Miles Easy", "Sat: Rest or Cross-Train", "Sun: 8 Miles LSD"
+        ]);
+        addWeek("Official Week 2", "Official Plan", "text-purple-600", "Pyramid Intervals", [
+            "Mon: Rest or Cross-Train", "Tue: 3 Miles Easy", "Wed: 6 Miles (3x400, 2x600, 2x400)", "Thu: 3 Miles Easy", "Fri: 4 Miles Easy", "Sat: Rest or Cross-Train", "Sun: 8 Miles LSD"
+        ]);
+        addWeek("Official Week 3", "Official Plan", "text-purple-600", "Intro to Yasso 800s", [
+            "Mon: Rest or Cross-Train", "Tue: 3 Miles Easy", "Wed: 7 Miles (3x400, 3x800 @ 4:00)", "Thu: 3 Miles Easy", "Fri: 4 Miles Easy", "Sat: Rest or Cross-Train", "Sun: 10 Miles LSD"
+        ]);
+        addWeek("Official Week 4", "Official Plan", "text-purple-600", "Tempo Introduction", [
+            "Mon: Rest or Cross-Train", "Tue: 4 Miles Easy", "Wed: 7 Miles (Mixed Intervals)", "Thu: 3 Miles Easy", "Fri: 4 Miles Easy", "Sat: Rest or Cross-Train", "Sun: 8 Miles (3M @ 8:44 Tempo)"
+        ]);
+        addWeek("Official Week 5", "Official Plan", "text-purple-600", "Halfway Point & The Mile Buildup", [
+            "Mon: Rest or Cross-Train", "Tue: 4 Miles Easy", "Wed: 8 Miles (The Mile Buildup)", "Thu: 3 Miles Easy", "Fri: 4 Miles Easy", "Sat: Rest or Cross-Train", "Sun: 12 Miles LSD"
+        ]);
+        addWeek("Official Week 6", "Official Plan", "text-purple-600", "Heavy Yassos & Longer Tempo", [
+            "Mon: Rest or Cross-Train", "Tue: 4 Miles Easy", "Wed: 8 Miles (5x800 @ 4:00)", "Thu: 3 Miles Easy", "Fri: 4 Miles Easy", "Sat: Rest or Cross-Train", "Sun: 10 Miles (4M @ 8:44 Tempo)"
+        ]);
+        addWeek("Official Week 7", "Official Plan", "text-purple-600", "Peak Volume Week", [
+            "Mon: Rest or Cross-Train", "Tue: 4 Miles Easy", "Wed: 8 Miles (Intervals)", "Thu: 3 Miles Easy", "Fri: 3 Miles Easy", "Sat: Rest Day", "Sun: 14 Miles LSD (Longest Run)"
+        ]);
+        addWeek("Official Week 8", "Official Plan", "text-purple-600", "Final High Intensity Week", [
+            "Mon: Rest or Cross-Train", "Tue: 4 Miles Easy", "Wed: 8 Miles (10x400 @ 2:00)", "Thu: 3 Miles Easy", "Fri: 5 Miles Easy", "Sat: Rest Day", "Sun: 10 Miles (6M @ 8:44 Tempo)"
+        ]);
+        addWeek("Official Week 9", "Taper Phase", "text-orange-500", "The Taper Begins", [
+            "Mon: Rest or Cross-Train", "Tue: 3 Miles Easy", "Wed: 8 Miles (Mile Breakdown)", "Thu: 3 Miles Easy", "Fri: 3 Miles Easy", "Sat: Rest or Cross-Train", "Sun: 8 Miles LSD"
+        ]);
+        addWeek("Official Week 10", "Race Week", "text-red-600", "RACE WEEK! Trust your training.", [
+            "Mon: Rest or Cross-Train", "Tue: 3 Miles Easy", "Wed: 6 Miles (Taper Intervals)", "Thu: 2 Miles Easy (Shakeout)", "Fri (Dec 4): RACE DAY! SUB-2:00 ATTEMPT!", "Sat: Rest & Celebrate", "Sun: Rest"
+        ]);
+
+        // --- APP LOGIC ---
+
+        let savedProgress = JSON.parse(localStorage.getItem('sub2tracker_v4')) || [];
+        const totalDays = 210; // 30 weeks * 7 days
         const container = document.getElementById('plan-container');
 
         function renderPlan() {
             container.innerHTML = '';
-            extendedPlan.forEach((phase) => {
-                const isCompleted = savedProgress.includes(phase.id);
+            
+            plan.forEach((week) => {
+                // Check if all days in this week are completed
+                const allDaysCompleted = week.schedule.every(day => savedProgress.includes(day.id));
                 
-                const scheduleHTML = phase.schedule.map(item => `<li class="mb-1 flex items-start"><span class="mr-2 text-blue-500">•</span> <span>${item}</span></li>`).join('');
-
                 const card = document.createElement('div');
-                card.className = `progress-card bg-white border-2 rounded-xl p-5 md:p-6 shadow-sm ${isCompleted ? 'completed-card' : 'border-transparent hover:border-blue-200'}`;
+                card.className = `progress-card bg-white border border-slate-200 rounded-xl p-5 md:p-6 shadow-sm transition-colors ${allDaysCompleted ? 'completed-week' : ''}`;
                 
+                // Build the daily checkboxes
+                const daysHTML = week.schedule.map(day => {
+                    const isChecked = savedProgress.includes(day.id) ? 'checked' : '';
+                    return `
+                        <label class="flex items-center space-x-3 cursor-pointer p-2 hover:bg-slate-50 rounded-lg transition-colors border border-transparent hover:border-slate-200">
+                            <input type="checkbox" value="${day.id}" onchange="toggleDay(this)" class="workout-checkbox w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" ${isChecked}>
+                            <span class="text-sm font-medium text-slate-700 select-none">${day.text}</span>
+                        </label>
+                    `;
+                }).join('');
+
                 card.innerHTML = `
-                    <div class="flex flex-col md:flex-row justify-between gap-4 w-full">
-                        <div class="flex-1">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-xs font-bold uppercase tracking-wider ${phase.color}">${phase.type}</span>
-                                <span class="text-sm font-semibold bg-slate-100 border border-slate-200 px-3 py-1 rounded-md text-slate-700 shadow-sm">${phase.date}</span>
-                            </div>
-                            <h3 class="text-xl font-bold text-slate-900 ${isCompleted ? 'completed-text' : ''}">${phase.title}</h3>
-                            <p class="text-slate-600 text-sm mt-1 mb-4 font-medium italic ${isCompleted ? 'completed-text' : ''}">${phase.goal}</p>
-                            
-                            <div class="schedule-box bg-slate-50 border border-slate-200 rounded-lg p-4 text-sm text-slate-700 transition-opacity duration-300">
-                                <h4 class="font-bold text-slate-800 mb-2 uppercase text-xs tracking-wider border-b border-slate-200 pb-1">Phase Plan</h4>
-                                <ul>${scheduleHTML}</ul>
-                            </div>
-                        </div>
-                        
-                        <div class="md:ml-4 self-end md:self-center shrink-0 w-full md:w-40 mt-4 md:mt-0">
-                            <button 
-                                onclick="toggleComplete(${phase.id})" 
-                                class="font-bold py-3 px-4 rounded-lg transition-colors w-full shadow-sm ${isCompleted ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border border-emerald-200' : 'bg-blue-600 text-white hover:bg-blue-700'}">
-                                ${isCompleted ? '✓ Completed' : 'Mark Complete'}
-                            </button>
-                        </div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider ${week.color}">${week.type}</span>
+                        <span class="text-sm font-semibold bg-slate-100 border border-slate-200 px-3 py-1 rounded-md text-slate-700 shadow-sm">${week.date}</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 transition-colors">${week.title}</h3>
+                    <p class="text-slate-600 text-sm mt-1 mb-4 italic">${week.goal}</p>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 bg-slate-50 border border-slate-200 rounded-lg p-3">
+                        ${daysHTML}
                     </div>
                 `;
                 container.appendChild(card);
             });
+            
             updateProgressBar();
         }
 
-        function toggleComplete(id) {
-            if (savedProgress.includes(id)) {
-                savedProgress = savedProgress.filter(item => item !== id);
+        // Handle individual checkbox clicks
+        window.toggleDay = function(checkbox) {
+            const id = checkbox.value;
+            if (checkbox.checked) {
+                if (!savedProgress.includes(id)) savedProgress.push(id);
             } else {
-                savedProgress.push(id);
+                savedProgress = savedProgress.filter(item => item !== id);
             }
-            localStorage.setItem('sub2tracker_v3', JSON.stringify(savedProgress));
-            renderPlan();
-        }
+            localStorage.setItem('sub2tracker_v4', JSON.stringify(savedProgress));
+            
+            // Check if we need to style the parent card as completed
+            const card = checkbox.closest('.progress-card');
+            const allCheckboxes = card.querySelectorAll('.workout-checkbox');
+            const allChecked = Array.from(allCheckboxes).every(cb => cb.checked);
+            
+            if (allChecked) {
+                card.classList.add('completed-week');
+            } else {
+                card.classList.remove('completed-week');
+            }
 
+            updateProgressBar();
+        };
+
+        // Update top GUI
         function updateProgressBar() {
-            const total = extendedPlan.length;
             const completed = savedProgress.length;
-            const percentage = Math.round((completed / total) * 100);
+            const percentage = Math.round((completed / totalDays) * 100);
 
             document.getElementById('progress-bar').style.width = `${percentage}%`;
             document.getElementById('progress-text').innerText = `${percentage}%`;
-            document.getElementById('phases-count').innerText = `${completed} / ${total} Phases Complete`;
+            document.getElementById('phases-count').innerText = `${completed} / ${totalDays} Days Completed`;
             
             if(percentage === 100) {
                 document.getElementById('progress-bar').classList.replace('bg-blue-500', 'bg-emerald-500');
@@ -258,6 +230,7 @@
             }
         }
 
+        // Initialize the app
         renderPlan();
     </script>
 </body>
